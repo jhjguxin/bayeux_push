@@ -53,6 +53,9 @@ should push some message to all users, maybe an pub/sub system
 
 ### message test
 
+m.attributes
+ => {"_id"=>"5195ede0d98ca4987d000005", "send_user_id"=>"5195ed94d98ca4987d000003", "target_user_id"=>"5195ed9ad98ca4987d000004", "content"=>"2134123412341234", "message_sequence"=>3, "updated_at"=>2013-05-17 08:44:16 UTC, "created_at"=>2013-05-17 08:44:16 UTC, "received"=>"0", "readed"=>"0", "deleted"=>"0"}
+
 m = Message.first
 send_user = m.send_user
 target_user = m.target_user

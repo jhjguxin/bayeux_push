@@ -11,15 +11,36 @@ class Connection < EventMachine::Connection
   end
 
   # client_info
-  def receive_data(data)
-    data.strip!
-    data = JSON.parse(data)
-
-    unless @client_id
-      handle_login(data)
-    else
-      handle_message(data)
+  def receive_data(message)
+    message.strip!
+    begin
+    message = JSON.parse(message)
+    rescue => error
+      send_data "#{error.message}, when parse '#{message}' to json"
+      return
     end
+
+    data = message["message"]["data"]
+    channel = message["message"]["channel"]
+    
+    if data.blank? or channel.blank?
+      send_data "data or channel is require"
+      return
+    end
+
+
+    case channel
+      when /meta\/server\//
+        puts "from server no need login"
+        #client_to_client
+      when /meta\/client\//
+        puts "from client"
+        unless @client_id
+          handle_login(data)
+        else
+          handle_message(data)
+        end
+      end
   end
 
   def unbind

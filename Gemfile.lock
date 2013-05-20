@@ -63,6 +63,14 @@ GEM
       rack (>= 1.0.0)
     tilt (1.4.1)
     tzinfo (0.3.37)
+    websocket (1.0.7)
+    websocket-eventmachine-base (1.0.2)
+      eventmachine (~> 1.0)
+      websocket (~> 1.0)
+      websocket-native (~> 1.0)
+    websocket-eventmachine-client (1.0.1)
+      websocket-eventmachine-base (~> 1.0)
+    websocket-native (1.0.0)
 
 PLATFORMS
   ruby
@@ -78,3 +86,4 @@ DEPENDENCIES
   rake (~> 10.0)
   sinatra (~> 1.4)
   thin (~> 1.5.1)
+  websocket-eventmachine-client (~> 1.0.1)

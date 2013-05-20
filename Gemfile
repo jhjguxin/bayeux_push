@@ -8,6 +8,9 @@ gem "async_sinatra", "~> 1.1.0"
 # Database Stack
 gem "mongoid", "~> 3.1.4"
 
+gem "websocket-eventmachine-client", "~> 1.0.1"
+#gem "websocket-eventmachine-server", "~> 1.0.1"
+
 gem "thin", "~> 1.5.1"
 
 group :development do

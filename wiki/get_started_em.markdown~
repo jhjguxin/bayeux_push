@@ -37,30 +37,47 @@ change sources of rubygems inside `Gemfile`
 rvm --create --ruby-version use 1.9.3@bayeux_push
 rvm --create --versions-conf use 1.9.3@bayeux_push
 
-### connect push server
+### expected result
 
-    module ClientPost
-        def post_init
-          send_data "GET /\r\n\r\n"
-          @data = ""
-        end
+when one user send new message to another one, that user(only this user) should have this received.
 
-        def receive_data(data)
-          @data << data
-        end
+    get("/cometd", message = {channel: "/meta/send_message", clientId: "83js73jsh29sjd92",id: "#{SecureRandom.hex}" , data: { "message_data_json" } })
 
-        def unbind
-          if @data =~ /[\n][\r]*[\n]/m
-            $`.each {|line| puts ">>> #{line}" }
-          end
+when one user lose some message last time who should received some messages belone to his.
 
-          EventMachine::stop_event_loop
-        end
-    end
+    get("/cometd", message = {channel: "/meta/messages/unread", clientId: "83js73jsh29sjd92", id: "#{SecureRandom.hex}", data: { "message_data_json" } })
 
-    EventMachine.run {
-      EventMachine.connect '127.0.0.1', 8081, ClientPost
-    }
+should push some message to all users, maybe an pub/sub system
+
+### connect push server from oauth_provider
+
+```ruby
+# http://stackoverflow.com/questions/1147557/what-is-the-second-paramenter-of-tcpsocket-send-in-ruby
+s = TCPSocket.new('127.0.0.1',8080)
+s.send('Hello World',0)
+s.close
+```
+
+send new message
+
+m = Message.first
+send_user = m.send_user
+target_user = m.target_user
+new_message = {message: {channel: "/meta/server/push_message", client_id: m.target_user.id, data: m.attributes}}
+s = TCPSocket.new('127.0.0.1',8080)
+s.send(new_message.to_json,0)
+s.close
+
+### connect from app or nomarl user
+
+```shell
+user = User.first
+login = {message: {channel: "/meta/client/login", client_id: "#{SecureRandom.hex}", user_id: user.id, data: {}}}
+login.to_json
+
+telnet localhost 8080
+# login
+{"message":{"channel":"/meta/client/login","client_id":"88e416953908bdb47f6cee7f654dd9e4","user_id":"51978df2f106da5e5500001a","data":{}}}
 
 ### resources
 
@@ -73,3 +90,5 @@ rvm --create --versions-conf use 1.9.3@bayeux_push
 *  [cometd-twisted](http://svn.cometd.com/trunk/cometd-twisted) # I wanna have a try but ...
 *  [Any success with Sinatra working together with EventMachine WebSockets](http://stackoverflow.com/questions/2999430/any-success-with-sinatra-working-together-with-eventmachine-websockets)
 *  [EventMachine实现简单的服务器和客户端](http://lee2013.iteye.com/blog/1041451)
+*  [eventmachine](http://eventmachine.rubyforge.org/file.GettingStarted.html)
+*  [求教,学习EventMachine时遇到的问题](http://ruby-china.org/topics/1320)

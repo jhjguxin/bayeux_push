@@ -42,11 +42,11 @@ rvm --create --versions-conf use 1.9.3@bayeux_push
 
 when one user send new message to another one, that user(only this user) should have this received.
 
-    get("/cometd", message = {channel: "/meta/send_message", clientId: "83js73jsh29sjd92",id: "#{SecureRandom.hex}" , data: { "message_data_json" } })
+    get("/cometd", message = {channel: "/meta/send_message", client_id: "83js73jsh29sjd92",id: "#{SecureRandom.hex}" , data: { "message_data_json" } })
 
 when one user lose some message last time who should received some messages belone to his.
 
-    get("/cometd", message = {channel: "/meta/messages/unread", clientId: "83js73jsh29sjd92", id: "#{SecureRandom.hex}", data: { "message_data_json" } })
+    get("/cometd", message = {channel: "/meta/messages/unread", client_id: "83js73jsh29sjd92", id: "#{SecureRandom.hex}", data: { "message_data_json" } })
 
 should push some message to all users, maybe an pub/sub system
 
@@ -64,10 +64,10 @@ action_wrap = Http::ActionWrap.new({url: "http://localhost:3000"})
 app.root_url(message: param,host: "localhost:3000")
 
 # target user is online
-connect = {message: {channel: "/meta/connect", id: "#{SecureRandom.hex}", clientId: m.send_user.id, connectionType: 'long-polling', data: {}}}
+connect = {message: {channel: "/meta/connect", id: "#{SecureRandom.hex}", client_id: m.send_user.id, connectionType: 'long-polling', data: {}}}
 helper.add_params_to_url("http://localhost:3000","/cometd", connect)
 
-handshake = {message: {channel: "/meta/handshake", id: "#{SecureRandom.hex}", clientId: m.send_user.id, connectionType: 'long-polling', data: {}}}
+handshake = {message: {channel: "/meta/handshake", id: "#{SecureRandom.hex}", client_id: m.send_user.id, connectionType: 'long-polling', data: {}}}
 helper.add_params_to_url("http://localhost:3000","/cometd", handshake)
 
 
