@@ -1,20 +1,21 @@
 class Connection < EventMachine::Connection
   attr_accessor :server
   attr_reader :client_id
+  attr_reader :user_id
 
   def initialize
   end
 
   # ask client to set client info
   def post_init()
-    send_data("Hi, please enter client info: ")
+    send_data("please enter client info: ")
   end
 
   # client_info
   def receive_data(message)
     message.strip!
     begin
-    message = JSON.parse(message)
+      message = JSON.parse(message)
     rescue => error
       send_data "#{error.message}, when parse '#{message}' to json"
       return
@@ -22,16 +23,16 @@ class Connection < EventMachine::Connection
 
     data = message["message"]["data"]
     channel = message["message"]["channel"]
-    
+
     if data.blank? or channel.blank?
       send_data "data or channel is require"
       return
     end
 
-
     case channel
       when /meta\/server\//
         puts "from server no need login"
+        push_message(message)
         #client_to_client
       when /meta\/client\//
         puts "from client"
@@ -44,11 +45,26 @@ class Connection < EventMachine::Connection
   end
 
   def unbind
-    @server.connections.each { |connection| connection.send_data("#{@client_id} has just left\n") }
+    # @server.connections.each { |connection| connection.send_data("#{@client_id} has just left\n") }
     @server.connections.delete(self)
   end
 
   private
+
+  def push_message(message)
+    message = message["message"] if message["message"].present?
+
+    if message.blank?
+      return
+    end
+
+    if message["user_id"].present?
+      @server.connections.each { |connection| connection.send_data(message) if connection.user_id == message["user_id"] }
+    end
+    if message["client_id"].present?
+      @server.connections.each { |connection| connection.send_data(message) if connection.client_id == message["client_id"] }
+    end
+  end
 
   # client_info = {client_id: "#{SecureRandom.hex}", user_id: User.first.id}.to_json
   # client input `puts client_info`

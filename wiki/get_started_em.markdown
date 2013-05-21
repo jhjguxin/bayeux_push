@@ -41,11 +41,11 @@ rvm --create --versions-conf use 1.9.3@bayeux_push
 
 when one user send new message to another one, that user(only this user) should have this received.
 
-    get("/cometd", message = {channel: "/meta/send_message", clientId: "83js73jsh29sjd92",id: "#{SecureRandom.hex}" , data: { "message_data_json" } })
+    get("/cometd", message = {channel: "/meta/send_message", user_id: "83js73jsh29sjd92", data: { "message_data_json" } })
 
 when one user lose some message last time who should received some messages belone to his.
 
-    get("/cometd", message = {channel: "/meta/messages/unread", clientId: "83js73jsh29sjd92", id: "#{SecureRandom.hex}", data: { "message_data_json" } })
+    get("/cometd", message = {channel: "/meta/messages/unread", user_id: "83js73jsh29sjd92", data: { "message_data_json" } })
 
 should push some message to all users, maybe an pub/sub system
 
@@ -63,7 +63,7 @@ send new message
 m = Message.first
 send_user = m.send_user
 target_user = m.target_user
-new_message = {message: {channel: "/meta/server/push_message", client_id: m.target_user.id, data: m.attributes}}
+new_message = {message: {channel: "/meta/server/push_message", user_id: m.target_user.id, data: m.attributes}}
 s = TCPSocket.new('127.0.0.1',8080)
 s.send(new_message.to_json,0)
 s.close
@@ -77,7 +77,7 @@ login.to_json
 
 telnet localhost 8080
 # login
-{"message":{"channel":"/meta/client/login","data":{"client_id":"8d46bb6ce196f90175c446449ecb2361","user_id":"51978df2f106da5e5500001a"}}}
+{"message":{"channel":"/meta/client/login","data":{"client_id":"8d46bb6ce196f90175c446449ecb2361","user_id":"5195ed94d98ca4987d000003"}}}
 ### resources
 
 *  [eventmachin-getting_started](https://github.com/eventmachine/eventmachine/tree/master/examples/guides/getting_started)
